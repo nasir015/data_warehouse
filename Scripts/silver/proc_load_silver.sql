@@ -2,6 +2,21 @@
 ===============================================================================
 Stored Procedure: Load Silver Layer (Bronze -> Silver)
 ===============================================================================
+*/
+
+-- Create the silver schema if it doesn't exist
+IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'silver')
+BEGIN
+	EXEC('CREATE SCHEMA silver')
+END
+GO
+USE DataWarehouse;
+GO
+
+/*
+===============================================================================
+Stored Procedure: Load Silver Layer (Bronze -> Silver)
+===============================================================================
 Script Purpose:
     This stored procedure performs the ETL (Extract, Transform, Load) process to 
     populate the 'silver' schema tables from the 'bronze' schema.
@@ -103,7 +118,9 @@ BEGIN
 			END AS prd_line, -- Map product line codes to descriptive values
 			CAST(prd_start_dt AS DATE) AS prd_start_dt,
 			CAST(
-				LEAD(prd_start_dt) OVER (PARTITION BY prd_key ORDER BY prd_start_dt) - 1 
+				DATEADD(day, -1, 
+					LEAD(prd_start_dt) OVER (PARTITION BY prd_key ORDER BY prd_start_dt)
+				)
 				AS DATE
 			) AS prd_end_dt -- Calculate end date as one day before the next start date
 		FROM bronze.crm_prd_info;
@@ -202,7 +219,7 @@ BEGIN
 			cntry
 		)
 		SELECT
-			REPLACE(cid, '-', '') AS cid, 
+			REPLACE(cid, '-', '') AS cid,
 			CASE
 				WHEN TRIM(cntry) = 'DE' THEN 'Germany'
 				WHEN TRIM(cntry) IN ('US', 'USA') THEN 'United States'
@@ -244,10 +261,14 @@ BEGIN
 	END TRY
 	BEGIN CATCH
 		PRINT '=========================================='
-		PRINT 'ERROR OCCURED DURING LOADING BRONZE LAYER'
-		PRINT 'Error Message' + ERROR_MESSAGE();
-		PRINT 'Error Message' + CAST (ERROR_NUMBER() AS NVARCHAR);
-		PRINT 'Error Message' + CAST (ERROR_STATE() AS NVARCHAR);
+		PRINT 'ERROR OCCURED DURING LOADING SILVER LAYER'
+		PRINT 'Error Message: ' + ERROR_MESSAGE();
+		PRINT 'Error Number: ' + CAST(ERROR_NUMBER() AS NVARCHAR);
+		PRINT 'Error State: ' + CAST(ERROR_STATE() AS NVARCHAR);
 		PRINT '=========================================='
 	END CATCH
 END
+GO
+
+EXEC silver.load_silver;
+GO

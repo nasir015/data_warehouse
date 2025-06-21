@@ -22,24 +22,56 @@ Usage Notes:
 -- ====================================================================
 -- Check for NULLs or Duplicates in Primary Key
 -- Expectation: No Results
+USE DataWarehouse;
+
+
 SELECT 
     cst_id,
     COUNT(*) 
-FROM silver.crm_cust_info
+FROM bronze.crm_cust_info
 GROUP BY cst_id
-HAVING COUNT(*) > 1 OR cst_id IS NULL;
+HAVING COUNT(*) = 1 OR cst_id IS NOT NULL;
+
+
 
 -- Check for Unwanted Spaces
 -- Expectation: No Results
+
+-- Check for NULLs or Unwanted Spaces in Customer Key
 SELECT 
     cst_key 
-FROM silver.crm_cust_info
+FROM Bronze.crm_cust_info
 WHERE cst_key != TRIM(cst_key);
 
+-- Check for NULLs or Unwanted Spaces in First Name
+SELECT
+    cst_firstname
+FROM bronze.crm_cust_info
+WHERE cst_firstname != TRIM(cst_firstname);
+
+-- Check for NULLs or Unwanted Spaces in Last Name
+SELECT 
+    cst_lastname
+FROM silver.crm_cust_info
+WHERE cst_lastname != TRIM(cst_lastname);
+
+
+
 -- Data Standardization & Consistency
-SELECT DISTINCT 
-    cst_marital_status 
-FROM silver.crm_cust_info;
+SELECT DISTINCT
+    
+    CASE
+        WHEN UPPER(TRIM(cst_marital_status)) = 'S' THEN
+        'Single'
+        WHEN UPPER(TRIM(cst_marital_status)) = 'M' THEN
+        'Married'
+        ELSE 'n/a'
+    END AS cst_marital_status
+FROM bronze.crm_cust_info;
+
+
+
+
 
 -- ====================================================================
 -- Checking 'silver.crm_prd_info'
@@ -49,7 +81,7 @@ FROM silver.crm_cust_info;
 SELECT 
     prd_id,
     COUNT(*) 
-FROM silver.crm_prd_info
+FROM bronze.crm_prd_info
 GROUP BY prd_id
 HAVING COUNT(*) > 1 OR prd_id IS NULL;
 
@@ -57,27 +89,36 @@ HAVING COUNT(*) > 1 OR prd_id IS NULL;
 -- Expectation: No Results
 SELECT 
     prd_nm 
-FROM silver.crm_prd_info
+FROM bronze.crm_prd_info
 WHERE prd_nm != TRIM(prd_nm);
 
 -- Check for NULLs or Negative Values in Cost
 -- Expectation: No Results
+
+-- Replace NULLs with 0 and check for negative values
 SELECT 
-    prd_cost 
-FROM silver.crm_prd_info
+    ISNULL(prd_cost,0) As prd_cost 
+FROM bronze.crm_prd_info
 WHERE prd_cost < 0 OR prd_cost IS NULL;
+
+
 
 -- Data Standardization & Consistency
 SELECT DISTINCT 
     prd_line 
-FROM silver.crm_prd_info;
+FROM bronze.crm_prd_info;
 
 -- Check for Invalid Date Orders (Start Date > End Date)
 -- Expectation: No Results
 SELECT 
-    * 
-FROM silver.crm_prd_info
-WHERE prd_end_dt < prd_start_dt;
+    prd_id,
+    prd_start_dt, 
+    prd_end_dt
+FROM bronze.crm_prd_info
+GROUP BY prd_id, prd_start_dt, prd_end_dt
+HAVING prd_start_dt > prd_end_dt;
+
+
 
 -- ====================================================================
 -- Checking 'silver.crm_sales_details'
