@@ -8,7 +8,7 @@ This project demonstrates a comprehensive data warehousing and analytics solutio
 ## 🏗️ Data Architecture
 
 The data architecture for this project follows Medallion Architecture **Bronze**, **Silver**, and **Gold** layers:
-[[![Data Architecture](docs/data_architecture.jpg)](https://github.com/nasir015/data_warehouse/blob/main/Docs/data_architecture.jpg)](https://github.com/nasir015/data_warehouse/blob/main/Docs/data_architecture.jpg)
+[![Data Architecture](docs/data_architecture.jpg)](https://github.com/nasir015/data_warehouse/blob/main/Docs/data_architecture.jpg)]
 
 1. **Bronze Layer**: Stores raw data as-is from the source systems. Data is ingested from CSV Files into SQL Server Database.
 2. **Silver Layer**: This layer includes data cleansing, standardization, and normalization processes to prepare data for analysis.
@@ -57,7 +57,7 @@ The ETL flow supports the full bronze → silver → gold transformation:
 2. Run Silver scripts to normalize and clean data.  
 3. Run Gold scripts to build analytical tables.
 
-See [[[docs/data_flow.drawio](docs/data_flow.drawio)](https://github.com/nasir015/data_warehouse/blob/main/Docs/Data_integration1.png)](https://github.com/nasir015/data_warehouse/blob/main/Docs/ETL.png) for the complete pipeline diagram!
+See [[docs/data_flow.drawio](docs/data_flow.drawio)](https://github.com/nasir015/data_warehouse/blob/main/Docs/Data_integration1.png)] for the complete pipeline diagram!
 
 
 
