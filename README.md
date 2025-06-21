@@ -8,7 +8,7 @@ This project demonstrates a comprehensive data warehousing and analytics solutio
 ## 🏗️ Data Architecture
 
 The data architecture for this project follows Medallion Architecture **Bronze**, **Silver**, and **Gold** layers:
-![Data Architecture](docs/data_architecture.jpg)
+[![Data Architecture](docs/data_architecture.jpg)](https://github.com/nasir015/data_warehouse/blob/main/Docs/data_architecture.jpg)
 
 1. **Bronze Layer**: Stores raw data as-is from the source systems. Data is ingested from CSV Files into SQL Server Database.
 2. **Silver Layer**: This layer includes data cleansing, standardization, and normalization processes to prepare data for analysis.
@@ -33,6 +33,33 @@ This project involves:
 - Data Analytics  
 
 ---
+
+## ⚙️ ETL Pipelines
+
+The ETL flow supports the full bronze → silver → gold transformation:
+
+### 🥉 Bronze Layer (`/scripts/bronze/`)
+- Load raw CSVs into staging tables.
+- Maintain full data fidelity with minimal transformation.
+
+### 🥈 Silver Layer (`/scripts/silver/`)
+- Cleanse and standardize formats (dates, currencies).
+- Remove duplicates and nulls.
+- Integrate ERP + CRM data into unified tables.
+
+### 🥇 Gold Layer (`/scripts/gold/`)
+- Define fact & dimension tables (Customer, Product, Sales, etc.).
+- Apply star‑schema design.
+- Generate aggregate tables for fast analytical queries.
+
+**Execution Steps:**
+1. Run Bronze scripts to ingest raw CSVs.  
+2. Run Silver scripts to normalize and clean data.  
+3. Run Gold scripts to build analytical tables.
+
+See [docs/data_flow.drawio](docs/data_flow.drawio) for the complete pipeline diagram!
+
+
 
 ## 🛠️ Important Links & Tools:
 
@@ -100,6 +127,19 @@ data-warehouse-project/
 └── requirements.txt                    # Dependencies and requirements for the project
 ```
 ---
+
+**To get started:**
+1. Clone the repo.  
+2. Install SQL Server Express & SSMS.  
+3. Run the ETL scripts in order.  
+4. Review analytics queries in `/scripts/gold/`.
+
+
+## 📄 Documentation
+
+- **[Data Catalog](docs/data_catalog.md):** Table/column definitions  
+- **[Naming Conventions](docs/naming-conventions.md):** Standards for consistency  
+- **DrawIO diagrams:** Architecture, ETL flow, and data models
 
 
 ## 🛡️ License
